@@ -91,27 +91,58 @@
     flex-direction: column;
     overflow: hidden;
   }
+  .task-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+  .task-scroll::-webkit-scrollbar { width: 4px; }
+  .task-scroll::-webkit-scrollbar-track { background: transparent; }
+  .task-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  .pane-header {
+  /* Section header */
+  .section-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
     padding: 12px 16px 8px;
-    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 5;
   }
-  .pane-title {
+  .section-toggle {
+    color: var(--sub);
+    font-size: 10px;
+    width: 12px;
+    flex-shrink: 0;
+    transition: transform .15s;
+  }
+  .section-title {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: .1em;
     color: var(--sub);
   }
+  .count-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text);
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 1px 8px;
+    min-width: 22px;
+    text-align: center;
+  }
+  .section-header .spacer { flex: 1; }
 
   /* Task input */
   .task-input-row {
     display: flex;
     gap: 6px;
     padding: 0 16px 12px;
-    flex-shrink: 0;
   }
   .task-input-row input {
     flex: 1;
@@ -124,22 +155,21 @@
     font-size: 13px;
     outline: none;
     transition: border-color .15s;
+    min-width: 0;
   }
   .task-input-row input:focus { border-color: var(--blue); }
   .task-input-row input::placeholder { color: var(--sub); }
 
   /* Task list */
   .task-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 16px 16px;
+    padding: 0 16px 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-height: 40px;
   }
-  .task-list::-webkit-scrollbar { width: 4px; }
-  .task-list::-webkit-scrollbar-track { background: transparent; }
-  .task-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .section.collapsed .task-list,
+  .section.collapsed .task-input-row { display: none; }
 
   /* Task card */
   .task-card {
@@ -148,22 +178,22 @@
     border-radius: 10px;
     padding: 10px 12px;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
     position: relative;
     overflow: hidden;
     transition: border-color .2s;
     cursor: default;
     user-select: none;
   }
-  .task-card.running {
-    border-color: var(--green);
-  }
-  .task-card.paused {
-    border-color: var(--amber);
-  }
-  .task-card.done {
-    opacity: .5;
+  .task-card.running { border-color: var(--green); }
+  .task-card.paused  { border-color: var(--amber); }
+  .task-card.done    { opacity: .5; }
+
+  .task-main-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   /* pulse bar */
@@ -219,6 +249,80 @@
     flex-shrink: 0;
   }
 
+  /* meta row (due / memo / carried badges) */
+  .task-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-left: 24px;
+  }
+  .due-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--sub);
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .due-badge.due-soon  { color: var(--amber); }
+  .due-badge.due-today { color: #000; background: var(--amber); font-weight: 600; }
+  .due-badge.overdue   { color: #fff; background: var(--red);   font-weight: 600; }
+  .carried-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #000;
+    background: var(--amber);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .memo-mark {
+    font-size: 11px;
+    color: var(--sub);
+  }
+
+  /* detail edit panel */
+  .task-detail {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: default;
+  }
+  .task-detail label {
+    font-size: 10px;
+    color: var(--sub);
+    letter-spacing: .05em;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .task-detail input[type="text"],
+  .task-detail input[type="date"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-family: var(--ui);
+    font-size: 12px;
+    outline: none;
+    color-scheme: dark;
+  }
+  .task-detail input:focus { border-color: var(--blue); }
+  .detail-row { display: flex; gap: 6px; align-items: flex-end; }
+  .detail-row > div { flex: 1; min-width: 0; }
+  .detail-btn-row {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    padding-top: 2px;
+  }
+
   /* ── Buttons ── */
   .btn {
     display: inline-flex;
@@ -244,6 +348,7 @@
   .btn-ghost  { background: var(--surface2); color: var(--text); }
   .btn-blue   { background: var(--blue);   color: #fff; }
   .btn-icon   { padding: 5px 7px; }
+  .btn-move   { background: var(--surface2); color: var(--blue); font-family: var(--mono); font-size: 11px; }
 
   /* ── Right: Log pane ── */
   .log-pane {
@@ -398,6 +503,11 @@
   /* drag ghost */
   .task-card.dragging { opacity: .4; }
   .task-card.drag-over { border-color: var(--blue); }
+  .task-list.drag-over-list {
+    outline: 1px dashed var(--blue);
+    outline-offset: -2px;
+    border-radius: 10px;
+  }
 
   /* toast */
   #toast {
@@ -436,18 +546,40 @@
 <main>
   <!-- ── Task Pane ── -->
   <div class="task-pane" id="taskPane">
-    <div class="pane-header">
-      <span class="pane-title">タスク</span>
-      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="clearDone()">完了済みを削除</button>
-    </div>
+    <div class="task-scroll">
 
-    <div class="task-input-row">
-      <input type="text" id="taskInput" placeholder="タスクを追加… (Enter)" maxlength="100"
-             onkeydown="if(event.key==='Enter')addTask()">
-      <button class="btn btn-ghost btn-icon" onclick="addTask()" title="追加">＋</button>
-    </div>
+      <!-- 今日やること -->
+      <div class="section" id="sectionToday">
+        <div class="section-header" onclick="toggleSection('today')">
+          <span class="section-toggle" id="toggleToday">▼</span>
+          <span class="section-title">今日やること</span>
+          <span class="count-badge" id="countToday">0</span>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px"
+                  onclick="event.stopPropagation();clearDone()">完了済みを削除</button>
+        </div>
+        <div class="task-list" id="todayList" data-section="today"></div>
+      </div>
 
-    <div class="task-list" id="taskList"></div>
+      <!-- タスク一覧 -->
+      <div class="section" id="sectionStock">
+        <div class="section-header" onclick="toggleSection('stock')">
+          <span class="section-toggle" id="toggleStock">▼</span>
+          <span class="section-title">タスク一覧</span>
+          <span class="count-badge" id="countStock">0</span>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost" id="sortBtn" style="font-size:11px;padding:4px 8px"
+                  onclick="event.stopPropagation();cycleSort()" title="並び替え">並び: 手動</button>
+        </div>
+        <div class="task-input-row">
+          <input type="text" id="taskInput" placeholder="タスクを追加… (Enter)" maxlength="100"
+                 onkeydown="if(event.key==='Enter')addTask()">
+          <button class="btn btn-ghost btn-icon" onclick="addTask()" title="追加">＋</button>
+        </div>
+        <div class="task-list" id="stockList" data-section="stock"></div>
+      </div>
+
+    </div>
   </div>
 
   <!-- ── Log Pane ── -->
@@ -496,9 +628,17 @@ let allLogs  = {};   // { 'YYYY-MM-DD': [{id,icon,text,time}, ...] }
 let activeId = null;
 let intervalId = null;
 let viewDate = todayKey(); // currently viewed date
+let editingId = null;      // task being edited inline
+let sortMode  = 'manual';  // manual | due | created
+let collapsed = { today: false, stock: false };
+let lastDay   = todayKey();
 
-const TASK_KEY = 'lifelog_tasks_v1';
-const LOG_KEY  = 'lifelog_logs_v2';  // new key (v2 = date-keyed)
+const TASK_KEY    = 'lifelog_tasks_v2';
+const TASK_KEY_V1 = 'lifelog_tasks_v1';
+const LOG_KEY     = 'lifelog_logs_v2';
+const UI_KEY      = 'lifelog_ui_v1';
+
+const SORT_LABEL = { manual: '手動', due: '期限順', created: '追加順' };
 
 // ── Date helpers ──
 function todayKey() {
@@ -508,9 +648,6 @@ function todayKey() {
 function keyToDate(k) {
   const [y,m,d] = k.split('-').map(Number);
   return new Date(y, m-1, d);
-}
-function dateToKey(d) {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function keyToLabel(k) {
   if (k === todayKey()) return '今日';
@@ -528,15 +665,51 @@ function save() {
   localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
   localStorage.setItem(LOG_KEY,  JSON.stringify(allLogs));
 }
+function saveUI() {
+  localStorage.setItem(UI_KEY, JSON.stringify({ sortMode, collapsed }));
+}
+function loadUI() {
+  try {
+    const ui = JSON.parse(localStorage.getItem(UI_KEY));
+    if (ui) {
+      if (SORT_LABEL[ui.sortMode]) sortMode = ui.sortMode;
+      if (ui.collapsed) collapsed = { today: !!ui.collapsed.today, stock: !!ui.collapsed.stock };
+    }
+  } catch {}
+}
 function load() {
-  try { tasks = JSON.parse(localStorage.getItem(TASK_KEY)) || []; } catch { tasks = []; }
-  // Migrate old logs (v1: flat array) to v2 (date-keyed)
+  // ── v2 tasks / v1 → v2 migration ──
+  const rawV2 = localStorage.getItem(TASK_KEY);
+  if (rawV2) {
+    try { tasks = JSON.parse(rawV2) || []; } catch { tasks = []; }
+  } else {
+    let v1 = [];
+    try { v1 = JSON.parse(localStorage.getItem(TASK_KEY_V1)) || []; } catch { v1 = []; }
+    tasks = v1.map(t => ({
+      ...t,
+      dueDate:   null,
+      memo:      '',
+      todayDate: null,
+      createdAt: todayKey(),
+    }));
+    if (tasks.length) localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
+    // v1 キーは残置(読み取りのみ)
+  }
+  // フィールド補完(古いv2データや欠損への保険)
+  tasks.forEach(t => {
+    if (t.dueDate   === undefined) t.dueDate   = null;
+    if (t.memo      === undefined) t.memo      = '';
+    if (t.todayDate === undefined) t.todayDate = null;
+    if (t.createdAt === undefined) t.createdAt = todayKey();
+    if (t.carriedFrom === undefined) t.carriedFrom = null;
+  });
+
+  // ── logs (v3 と同じ) ──
   const raw = localStorage.getItem(LOG_KEY);
   const rawOld = localStorage.getItem('lifelog_logs_v1');
   if (raw) {
     try { allLogs = JSON.parse(raw); } catch { allLogs = {}; }
   } else if (rawOld) {
-    // migrate: assign all old entries to today
     try {
       const old = JSON.parse(rawOld);
       if (Array.isArray(old) && old.length) allLogs[todayKey()] = old;
@@ -553,6 +726,28 @@ function load() {
     }
   });
   activeId = null;
+
+  carryOver();
+  save();
+}
+
+// ── 日付繰越(持ち越し) ──
+function carryOver() {
+  const today = todayKey();
+  let changed = false;
+  // 過去日の完了済み今日タスクは自動削除(実行記録はログに残っている)
+  const before = tasks.length;
+  tasks = tasks.filter(t => !(t.todayDate && t.todayDate < today && t.status === 'done'));
+  if (tasks.length !== before) changed = true;
+  // 過去日の未完了今日タスクは今日へ持ち越し
+  tasks.forEach(t => {
+    if (t.todayDate && t.todayDate < today && t.status !== 'done') {
+      t.carriedFrom = t.todayDate;
+      t.todayDate = today;
+      changed = true;
+    }
+  });
+  return changed;
 }
 
 // ── Helpers ──
@@ -609,7 +804,6 @@ function clearDayLog() {
 // ── Date navigation ──
 function shiftDay(delta) {
   const dates = sortedLogDates();
-  // build navigation across dates that have logs + today
   const today = todayKey();
   const navSet = new Set([...dates, today]);
   const navDates = [...navSet].sort();
@@ -656,7 +850,6 @@ function submitNote() {
   const inp = document.getElementById('noteInput');
   const text = inp.value.trim();
   if (!text) return;
-  // notes always go to today
   addLogEntry('📝', text);
   inp.value = '';
   document.getElementById('noteBar').style.display = 'none';
@@ -667,15 +860,19 @@ function addTask() {
   const inp = document.getElementById('taskInput');
   const name = inp.value.trim();
   if (!name) return;
-  tasks.push({ id: uid(), name, status: 'idle', elapsed: 0, startedAt: null });
+  tasks.push({
+    id: uid(), name, status: 'idle', elapsed: 0, startedAt: null,
+    dueDate: null, memo: '', todayDate: null, createdAt: todayKey(), carriedFrom: null,
+  });
   inp.value = '';
   save();
   renderTasks();
 }
 function startTask(id) {
-  if (activeId && activeId !== id) pauseTask(activeId);
   const t = tasks.find(t => t.id === id);
   if (!t || t.status === 'done') return;
+  if (t.todayDate !== todayKey()) return; // タイマーは今日リストのみ
+  if (activeId && activeId !== id) pauseTask(activeId);
   const wasIdle = t.status === 'idle';
   t.status = 'running';
   t.startedAt = Date.now();
@@ -715,6 +912,7 @@ function deleteTask(id) {
   const t = tasks.find(t => t.id === id);
   if (!t) return;
   if (t.status === 'running') pauseTask(id);
+  if (editingId === id) editingId = null;
   tasks = tasks.filter(t => t.id !== id);
   save();
   renderTasks();
@@ -722,6 +920,75 @@ function deleteTask(id) {
 function clearDone() {
   tasks = tasks.filter(t => t.status !== 'done');
   save();
+  renderTasks();
+}
+
+// ── 移動操作 ──
+function moveToToday(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t || t.todayDate === todayKey()) return;
+  t.todayDate = todayKey();
+  t.carriedFrom = null;
+  if (editingId === id) editingId = null;
+  save();
+  renderTasks();
+  addLogEntry('📌', `『${t.name}』を今日やることに追加`);
+}
+function moveToStock(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t || !t.todayDate) return;
+  if (t.status === 'running') pauseTask(id);
+  t.todayDate = null;
+  t.carriedFrom = null;
+  save();
+  renderTasks();
+  addLogEntry('↩', `『${t.name}』をタスク一覧に戻した`);
+}
+
+// ── 詳細編集 ──
+function toggleEdit(id) {
+  editingId = (editingId === id) ? null : id;
+  renderTasks();
+  if (editingId) {
+    const el = document.querySelector(`[data-task="${editingId}"] .detail-name`);
+    if (el) el.focus();
+  }
+}
+function updateTaskName(id, value) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  const name = value.trim().slice(0, 100);
+  if (name) t.name = name;
+  save();
+  renderTasks();
+}
+function updateTaskDue(id, value) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.dueDate = value || null;
+  save();
+  renderTasks();
+}
+function clearTaskDue(id) {
+  updateTaskDue(id, null);
+}
+function updateTaskMemo(id, value) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.memo = (value || '').slice(0, 200);
+  save();
+  renderTasks();
+}
+
+// ── 並び替え ──
+function cycleSort() {
+  sortMode = sortMode === 'manual' ? 'due' : sortMode === 'due' ? 'created' : 'manual';
+  saveUI();
+  renderTasks();
+}
+function toggleSection(sec) {
+  collapsed[sec] = !collapsed[sec];
+  saveUI();
   renderTasks();
 }
 
@@ -737,56 +1004,220 @@ function startInterval() {
   }, 1000);
 }
 
+// ── 期限バッジ ──
+function dueBadgeHtml(t) {
+  if (!t.dueDate) return '';
+  const today = todayKey();
+  const diff = Math.round((keyToDate(t.dueDate) - keyToDate(today)) / 86400000);
+  const label = keyToDate(t.dueDate).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',weekday:'short'});
+  if (diff < 0)   return `<span class="due-badge overdue">📅 ${label} 期限切れ</span>`;
+  if (diff === 0) return `<span class="due-badge due-today">📅 今日まで</span>`;
+  if (diff <= 3)  return `<span class="due-badge due-soon">📅 ${label} まで</span>`;
+  return `<span class="due-badge">📅 ${label} まで</span>`;
+}
+
 // ── Render Tasks ──
-function renderTasks() {
-  const list = document.getElementById('taskList');
-  if (!tasks.length) {
-    list.innerHTML = '<div class="empty">タスクがありません</div>';
-    return;
+function todayTasks() {
+  const today = todayKey();
+  return tasks.filter(t => t.todayDate === today);
+}
+function stockTasks() {
+  let arr = tasks.filter(t => !t.todayDate);
+  if (sortMode === 'due') {
+    arr = [...arr].sort((a, b) => (a.dueDate || '9999-99-99') < (b.dueDate || '9999-99-99') ? -1 : 1);
+  } else if (sortMode === 'created') {
+    arr = [...arr].sort((a, b) => (a.createdAt || '') < (b.createdAt || '') ? -1 : 1);
   }
-  list.innerHTML = '';
-  tasks.forEach(t => {
-    const div = document.createElement('div');
-    div.className = `task-card ${t.status}`;
-    div.dataset.task = t.id;
-    div.draggable = true;
-    const elapsed = t.status === 'running' ? t.elapsed + (Date.now() - t.startedAt) : t.elapsed;
-    const elapsedClass = t.status === 'running' ? 'running-time' : t.status === 'paused' ? 'paused-time' : '';
-    let actions = '';
-    if (t.status === 'idle') {
-      actions = `<button class="btn btn-green btn-icon" onclick="startTask('${t.id}')" title="開始">▶</button>
-                 <button class="btn btn-ghost btn-icon" onclick="deleteTask('${t.id}')" title="削除">✕</button>`;
-    } else if (t.status === 'running') {
-      actions = `<button class="btn btn-amber btn-icon" onclick="pauseTask('${t.id}')" title="中断">⏸</button>
-                 <button class="btn btn-ghost btn-icon" onclick="finishTask('${t.id}')" title="完了">✅</button>`;
-    } else if (t.status === 'paused') {
-      actions = `<button class="btn btn-green btn-icon" onclick="startTask('${t.id}')" title="再開">▶</button>
-                 <button class="btn btn-ghost btn-icon" onclick="finishTask('${t.id}')" title="完了">✅</button>
-                 <button class="btn btn-ghost btn-icon" onclick="deleteTask('${t.id}')" title="削除">✕</button>`;
-    } else {
-      actions = `<button class="btn btn-ghost btn-icon" onclick="deleteTask('${t.id}')" title="削除">✕</button>`;
-    }
-    div.innerHTML = `
+  return arr;
+}
+
+function renderTasks() {
+  const today = todayTasks();
+  const stock = stockTasks();
+
+  document.getElementById('countToday').textContent = today.length;
+  document.getElementById('countStock').textContent = stock.length;
+  document.getElementById('toggleToday').textContent = collapsed.today ? '▶' : '▼';
+  document.getElementById('toggleStock').textContent = collapsed.stock ? '▶' : '▼';
+  document.getElementById('sectionToday').classList.toggle('collapsed', collapsed.today);
+  document.getElementById('sectionStock').classList.toggle('collapsed', collapsed.stock);
+  document.getElementById('sortBtn').textContent = '並び: ' + SORT_LABEL[sortMode];
+
+  // 今日やること
+  const todayList = document.getElementById('todayList');
+  todayList.innerHTML = '';
+  if (!today.length) {
+    todayList.innerHTML = '<div class="empty">タスク一覧から ↑ で追加してください</div>';
+  } else {
+    today.forEach(t => todayList.appendChild(buildTodayCard(t)));
+  }
+
+  // タスク一覧
+  const stockList = document.getElementById('stockList');
+  stockList.innerHTML = '';
+  if (!stock.length) {
+    stockList.innerHTML = '<div class="empty">タスクがありません</div>';
+  } else {
+    stock.forEach(t => stockList.appendChild(buildStockCard(t)));
+  }
+}
+
+function buildTodayCard(t) {
+  const div = document.createElement('div');
+  div.className = `task-card ${t.status}`;
+  div.dataset.task = t.id;
+  div.draggable = true;
+  const elapsed = t.status === 'running' ? t.elapsed + (Date.now() - t.startedAt) : t.elapsed;
+  const elapsedClass = t.status === 'running' ? 'running-time' : t.status === 'paused' ? 'paused-time' : '';
+
+  let actions = '';
+  if (t.status === 'idle') {
+    actions = `<button class="btn btn-green btn-icon" onclick="startTask('${t.id}')" title="開始">▶</button>
+               <button class="btn btn-move btn-icon" onclick="moveToStock('${t.id}')" title="タスク一覧に戻す">↓</button>`;
+  } else if (t.status === 'running') {
+    actions = `<button class="btn btn-amber btn-icon" onclick="pauseTask('${t.id}')" title="中断">⏸</button>
+               <button class="btn btn-ghost btn-icon" onclick="finishTask('${t.id}')" title="完了">✅</button>`;
+  } else if (t.status === 'paused') {
+    actions = `<button class="btn btn-green btn-icon" onclick="startTask('${t.id}')" title="再開">▶</button>
+               <button class="btn btn-ghost btn-icon" onclick="finishTask('${t.id}')" title="完了">✅</button>
+               <button class="btn btn-move btn-icon" onclick="moveToStock('${t.id}')" title="タスク一覧に戻す">↓</button>`;
+  } else {
+    actions = `<button class="btn btn-ghost btn-icon" onclick="deleteTask('${t.id}')" title="削除">✕</button>`;
+  }
+
+  // メタ行(持ち越し / 期限 / メモ)
+  const metaParts = [];
+  if (t.carriedFrom && t.status !== 'done') metaParts.push('<span class="carried-badge">持ち越し</span>');
+  const due = dueBadgeHtml(t);
+  if (due) metaParts.push(due);
+  if (t.memo) metaParts.push(`<span class="memo-mark" title="${escHtml(t.memo)}">📝 ${escHtml(t.memo)}</span>`);
+  const metaRow = metaParts.length ? `<div class="task-meta-row">${metaParts.join('')}</div>` : '';
+
+  div.innerHTML = `
+    <div class="task-main-row">
       <span class="task-drag-handle" title="ドラッグで並び替え">⠿</span>
       <span class="task-name ${t.status==='done'?'done-text':''}">${escHtml(t.name)}</span>
       <span class="task-elapsed ${elapsedClass}">${elapsed>0?fmt(elapsed):''}</span>
       <div class="task-actions">${actions}</div>
-    `;
-    div.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', t.id); div.classList.add('dragging'); });
-    div.addEventListener('dragend',   () => div.classList.remove('dragging'));
-    div.addEventListener('dragover',  e => { e.preventDefault(); div.classList.add('drag-over'); });
-    div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-    div.addEventListener('drop', e => {
-      e.preventDefault(); div.classList.remove('drag-over');
-      const fromId = e.dataTransfer.getData('text/plain');
-      if (fromId === t.id) return;
-      const fi = tasks.findIndex(x => x.id === fromId);
-      const ti = tasks.findIndex(x => x.id === t.id);
-      const [item] = tasks.splice(fi, 1);
-      tasks.splice(ti, 0, item);
-      save(); renderTasks();
-    });
-    list.appendChild(div);
+    </div>
+    ${metaRow}
+  `;
+  attachDnD(div, t, 'today');
+  return div;
+}
+
+function buildStockCard(t) {
+  const div = document.createElement('div');
+  div.className = 'task-card';
+  div.dataset.task = t.id;
+  div.draggable = true;
+
+  const metaParts = [];
+  const due = dueBadgeHtml(t);
+  if (due) metaParts.push(due);
+  if (t.memo) metaParts.push(`<span class="memo-mark" title="${escHtml(t.memo)}">📝 メモあり</span>`);
+  const metaRow = metaParts.length ? `<div class="task-meta-row">${metaParts.join('')}</div>` : '';
+
+  const editing = editingId === t.id;
+  const detail = editing ? `
+    <div class="task-detail" onclick="event.stopPropagation()">
+      <div>
+        <label>タスク名</label>
+        <input type="text" class="detail-name" value="${escHtml(t.name)}" maxlength="100"
+               onchange="updateTaskName('${t.id}', this.value)"
+               onkeydown="if(event.key==='Enter')this.blur()">
+      </div>
+      <div class="detail-row">
+        <div>
+          <label>期限</label>
+          <input type="date" value="${t.dueDate || ''}" onchange="updateTaskDue('${t.id}', this.value)">
+        </div>
+        <button class="btn btn-ghost" onclick="clearTaskDue('${t.id}')" title="期限をクリア">クリア</button>
+      </div>
+      <div>
+        <label>メモ</label>
+        <input type="text" value="${escHtml(t.memo || '')}" maxlength="200" placeholder="補足メモ…"
+               onchange="updateTaskMemo('${t.id}', this.value)"
+               onkeydown="if(event.key==='Enter')this.blur()">
+      </div>
+      <div class="detail-btn-row">
+        <button class="btn btn-red" style="font-size:11px" onclick="deleteTask('${t.id}')">削除</button>
+        <button class="btn btn-ghost" style="font-size:11px" onclick="toggleEdit('${t.id}')">閉じる</button>
+      </div>
+    </div>` : '';
+
+  div.innerHTML = `
+    <div class="task-main-row">
+      <span class="task-drag-handle" title="ドラッグで並び替え">⠿</span>
+      <span class="task-name">${escHtml(t.name)}</span>
+      <span class="task-elapsed">${t.elapsed>0?fmt(t.elapsed):''}</span>
+      <div class="task-actions">
+        <button class="btn btn-move" onclick="moveToToday('${t.id}')" title="今日やることに追加">↑ 今日</button>
+      </div>
+    </div>
+    ${metaRow}
+    ${detail}
+  `;
+  div.addEventListener('click', e => {
+    if (e.target.closest('button, input, .task-drag-handle, .task-detail')) return;
+    toggleEdit(t.id);
+  });
+  attachDnD(div, t, 'stock');
+  return div;
+}
+
+// ── Drag & Drop ──
+function attachDnD(div, t, section) {
+  div.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', t.id);
+    div.classList.add('dragging');
+  });
+  div.addEventListener('dragend', () => div.classList.remove('dragging'));
+  div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
+  div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+  div.addEventListener('drop', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    div.classList.remove('drag-over');
+    const fromId = e.dataTransfer.getData('text/plain');
+    if (fromId === t.id) return;
+    const from = tasks.find(x => x.id === fromId);
+    if (!from) return;
+    const fromSection = from.todayDate === todayKey() ? 'today' : 'stock';
+
+    if (fromSection !== section) {
+      // セクション間移動(ドロップ先の位置に挿入)
+      if (section === 'today') moveToToday(fromId);
+      else moveToStock(fromId);
+    } else if (section === 'stock' && sortMode !== 'manual') {
+      toast('並び替えは「手動」モードで行えます');
+      return;
+    }
+    // 配列上でドロップ先の位置へ並び替え
+    const fi = tasks.findIndex(x => x.id === fromId);
+    const ti = tasks.findIndex(x => x.id === t.id);
+    if (fi < 0 || ti < 0) return;
+    const [item] = tasks.splice(fi, 1);
+    tasks.splice(ti, 0, item);
+    save();
+    renderTasks();
+  });
+}
+// セクションの空き領域へのドロップ(末尾に移動)
+function attachListDnD(listId, section) {
+  const list = document.getElementById(listId);
+  list.addEventListener('dragover', e => { e.preventDefault(); list.classList.add('drag-over-list'); });
+  list.addEventListener('dragleave', () => list.classList.remove('drag-over-list'));
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    list.classList.remove('drag-over-list');
+    const fromId = e.dataTransfer.getData('text/plain');
+    const from = tasks.find(x => x.id === fromId);
+    if (!from) return;
+    const fromSection = from.todayDate === todayKey() ? 'today' : 'stock';
+    if (fromSection === section) return; // カード上のドロップで処理済み
+    if (section === 'today') moveToToday(fromId);
+    else moveToStock(fromId);
   });
 }
 
@@ -870,10 +1301,21 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Date header ──
+// ── Date header + 日付変更検知 ──
 function updateDateLabel() {
   document.getElementById('dateLabel').textContent =
     new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  // 日付が変わったら繰越を実行
+  const today = todayKey();
+  if (today !== lastDay) {
+    const wasViewingToday = viewDate === lastDay;
+    lastDay = today;
+    if (carryOver()) save();
+    if (wasViewingToday) viewDate = today;
+    renderTasks();
+    renderLog();
+    updateDateNav();
+  }
 }
 
 // ── Mobile tabs ──
@@ -893,13 +1335,15 @@ function switchTab(tab) {
 }
 
 // ── Init ──
+loadUI();
 load();
 updateDateLabel();
 setInterval(updateDateLabel, 60000);
 renderTasks();
 renderLog();
 updateDateNav();
-if (activeId) startInterval();
+attachListDnD('todayList', 'today');
+attachListDnD('stockList', 'stock');
 </script>
 </body>
 </html>
